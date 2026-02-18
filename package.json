@@ -1,0 +1,37 @@
+{
+  "name": "@quave/enum",
+  "version": "1.0.0",
+  "description": "Lightweight utility to create rich, type-safe enums with auto-generated names, indexes, and custom properties",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src"
+  ],
+  "keywords": [
+    "enum",
+    "enums",
+    "enumeration",
+    "constants",
+    "javascript",
+    "nodejs",
+    "utility"
+  ],
+  "author": "Quave <support@quave.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/quavedev/enum.git"
+  },
+  "bugs": {
+    "url": "https://github.com/quavedev/enum/issues"
+  },
+  "homepage": "https://github.com/quavedev/enum#readme",
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
