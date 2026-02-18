@@ -55,7 +55,7 @@ createEnum(entries, options?)
 ### Status Enum with Labels and Styles
 
 ```js
-const Status = createEnum({
+const Statuses = createEnum({
   ACTIVE: {
     label: 'Active',
     color: 'green',
@@ -70,10 +70,10 @@ const Status = createEnum({
   },
 });
 
-Status.ACTIVE.label; // "Active"
-Status.ACTIVE.color; // "green"
-Status.ACTIVE.name;  // "ACTIVE"
-Status.ACTIVE.index; // 0
+Statuses.ACTIVE.label; // "Active"
+Statuses.ACTIVE.color; // "green"
+Statuses.ACTIVE.name;  // "ACTIVE"
+Statuses.ACTIVE.index; // 0
 ```
 
 ### Enum with Value Property
@@ -81,7 +81,7 @@ Status.ACTIVE.index; // 0
 When integrating with databases or APIs, use a `value` property to decouple the key from the stored value:
 
 ```js
-const LogLevel = createEnum({
+const LogLevels = createEnum({
   ERROR: { value: 'error', label: 'Error', severity: 1 },
   WARN: { value: 'warn', label: 'Warning', severity: 2 },
   INFO: { value: 'info', label: 'Info', severity: 3 },
@@ -90,12 +90,12 @@ const LogLevel = createEnum({
 
 // Find by value (e.g. from a database record)
 const getLogLevelByValue = (value) =>
-  Object.values(LogLevel).find((level) => level.value === value);
+  Object.values(LogLevels).find((level) => level.value === value);
 
 getLogLevelByValue('warn'); // { name: "WARN", index: 1, value: "warn", label: "Warning", severity: 2 }
 
 // Get all valid values (e.g. for schema validation)
-const LOG_LEVEL_VALUES = Object.values(LogLevel).map((l) => l.value);
+const LOG_LEVEL_VALUES = Object.values(LogLevels).map((l) => l.value);
 // ["error", "warn", "info", "debug"]
 ```
 
@@ -104,7 +104,7 @@ const LOG_LEVEL_VALUES = Object.values(LogLevel).map((l) => l.value);
 Attach boolean flags to make conditionals expressive and centralized:
 
 ```js
-const OrderStatus = createEnum({
+const OrderStatuses = createEnum({
   PENDING: {
     label: 'Pending',
     canCancel: true,
@@ -131,7 +131,7 @@ const OrderStatus = createEnum({
 });
 
 // Clean conditionals
-const status = OrderStatus[order.status];
+const status = OrderStatuses[order.status];
 if (status.canCancel) {
   showCancelButton();
 }
@@ -169,7 +169,7 @@ Permissions.ADMIN.canDelete; // true  (overridden)
 Enum entries can include functions for validation, computation, or any behavior:
 
 ```js
-const PricingPlan = createEnum({
+const PricingPlans = createEnum({
   FREE: {
     label: 'Free',
     maxUsers: 5,
@@ -190,7 +190,7 @@ const PricingPlan = createEnum({
   },
 });
 
-PricingPlan.PRO.calculateCost({ users: 25 }); // 59
+PricingPlans.PRO.calculateCost({ users: 25 }); // 59
 ```
 
 ### Referencing Other Enums
@@ -198,25 +198,25 @@ PricingPlan.PRO.calculateCost({ users: 25 }); // 59
 Enums can reference values from other enums for cross-enum relationships:
 
 ```js
-const Category = createEnum({
+const Categories = createEnum({
   ELECTRONICS: { label: 'Electronics' },
   CLOTHING: { label: 'Clothing' },
 });
 
-const Product = createEnum({
+const Products = createEnum({
   LAPTOP: {
     label: 'Laptop',
-    category: Category.ELECTRONICS.name,
+    category: Categories.ELECTRONICS.name,
     price: 999,
   },
   T_SHIRT: {
     label: 'T-Shirt',
-    category: Category.CLOTHING.name,
+    category: Categories.CLOTHING.name,
     price: 25,
   },
 });
 
-Product.LAPTOP.category; // "ELECTRONICS"
+Products.LAPTOP.category; // "ELECTRONICS"
 ```
 
 ### Metadata for Forms and UI
@@ -224,7 +224,7 @@ Product.LAPTOP.category; // "ELECTRONICS"
 Enums are great for driving dynamic UIs:
 
 ```js
-const ContactMethod = createEnum({
+const ContactMethods = createEnum({
   EMAIL: {
     value: 'email',
     label: 'Email',
@@ -249,7 +249,7 @@ const ContactMethod = createEnum({
 });
 
 // Render a select dropdown
-const options = Object.values(ContactMethod).map(({ value, label, icon }) => ({
+const options = Object.values(ContactMethods).map(({ value, label, icon }) => ({
   value,
   label,
   icon,
@@ -257,7 +257,7 @@ const options = Object.values(ContactMethod).map(({ value, label, icon }) => ({
 
 // Validate required fields for selected method
 const validate = (method, formData) => {
-  const config = Object.values(ContactMethod).find((m) => m.value === method);
+  const config = Object.values(ContactMethods).find((m) => m.value === method);
   return config.requiredFields.every((field) => formData[field]);
 };
 ```
@@ -269,7 +269,7 @@ const validate = (method, formData) => {
 ```js
 // When the key comes from a database or API:
 const statusKey = record.status; // "PROCESSING"
-const status = OrderStatus[statusKey];
+const status = OrderStatuses[statusKey];
 console.log(status.label); // "Processing"
 ```
 
@@ -277,27 +277,27 @@ console.log(status.label); // "Processing"
 
 ```js
 // Get all entries matching a condition:
-const cancelableStatuses = Object.values(OrderStatus).filter((s) => s.canCancel);
+const cancelableStatuses = Object.values(OrderStatuses).filter((s) => s.canCancel);
 ```
 
 ### Getting All Keys
 
 ```js
 // For schema validation with the key as the stored value:
-const allowedStatuses = Object.keys(OrderStatus);
+const allowedStatuses = Object.keys(OrderStatuses);
 // ["PENDING", "PROCESSING", "SHIPPED", "DELIVERED"]
 ```
 
 ### Finding a Default Entry
 
 ```js
-const Duration = createEnum({
+const Durations = createEnum({
   SHORT: { value: '5m', label: '5 minutes' },
   MEDIUM: { value: '15m', label: '15 minutes', isDefault: true },
   LONG: { value: '1h', label: '1 hour' },
 });
 
-const getDefault = () => Object.values(Duration).find((d) => d.isDefault);
+const getDefault = () => Object.values(Durations).find((d) => d.isDefault);
 getDefault().value; // "15m"
 ```
 
