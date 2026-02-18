@@ -76,9 +76,32 @@ Statuses.ACTIVE.name;  // "ACTIVE"
 Statuses.ACTIVE.index; // 0
 ```
 
+### Storing Enums in the Database
+
+Prefer using `.name` to store enum references in your database. The `name` is automatically injected by `createEnum` and matches the key, so you can look it up directly with `MyEnum[name]` and validate with `Object.keys()`:
+
+```js
+const OrderStatuses = createEnum({
+  PENDING: { label: 'Pending' },
+  PROCESSING: { label: 'Processing' },
+  SHIPPED: { label: 'Shipped' },
+});
+
+// Save to database using .name
+db.orders.insert({ status: OrderStatuses.PENDING.name }); // stores "PENDING"
+
+// Read back from database — direct lookup by key
+const status = OrderStatuses[record.status];
+console.log(status.label); // "Pending"
+
+// Schema validation
+const allowedStatuses = Object.keys(OrderStatuses);
+// ["PENDING", "PROCESSING", "SHIPPED"]
+```
+
 ### Enum with Value Property
 
-When integrating with databases or APIs, use a `value` property to decouple the key from the stored value:
+Use `value` when integrating with external systems you don't control (third-party APIs, legacy databases, protocols) where the expected format differs from your enum keys:
 
 ```js
 const LogLevels = createEnum({
@@ -88,13 +111,13 @@ const LogLevels = createEnum({
   DEBUG: { value: 'debug', label: 'Debug', severity: 4 },
 });
 
-// Find by value (e.g. from a database record)
+// Find by value (e.g. from an external API response)
 const getLogLevelByValue = (value) =>
   Object.values(LogLevels).find((level) => level.value === value);
 
 getLogLevelByValue('warn'); // { name: "WARN", index: 1, value: "warn", label: "Warning", severity: 2 }
 
-// Get all valid values (e.g. for schema validation)
+// Get all valid values (e.g. for validating external input)
 const LOG_LEVEL_VALUES = Object.values(LogLevels).map((l) => l.value);
 // ["error", "warn", "info", "debug"]
 ```
@@ -264,28 +287,11 @@ const validate = (method, formData) => {
 
 ## Common Patterns
 
-### Dynamic Access from Stored Values
-
-```js
-// When the key comes from a database or API:
-const statusKey = record.status; // "PROCESSING"
-const status = OrderStatuses[statusKey];
-console.log(status.label); // "Processing"
-```
-
 ### Filtering Entries
 
 ```js
 // Get all entries matching a condition:
 const cancelableStatuses = Object.values(OrderStatuses).filter((s) => s.canCancel);
-```
-
-### Getting All Keys
-
-```js
-// For schema validation with the key as the stored value:
-const allowedStatuses = Object.keys(OrderStatuses);
-// ["PENDING", "PROCESSING", "SHIPPED", "DELIVERED"]
 ```
 
 ### Finding a Default Entry
